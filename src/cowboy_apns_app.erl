@@ -15,7 +15,8 @@ start(_Type, _Args) ->
 	Dispatch = cowboy_router:compile([
 		{'_', [
 			%%{"/", toppage_handler, []}
-			{"/send/apns", apns_handler, []}
+			{"/send/apns", apns_handler, []},
+			{"/background/send/apns", background_apns_handler, []}
 		]}
 	]),
 	{ok, _} = cowboy:start_clear(http, [{port, 8080}], #{

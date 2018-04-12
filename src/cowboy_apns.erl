@@ -6,6 +6,8 @@
 %% API.
 -export([start/0,
          send/3,
+         background_send/2,
+         background_send/3,
          send/2]).
 
 -export([start_link/1, stop/0]).
@@ -21,9 +23,22 @@ start() ->
     application:ensure_all_started(cowboy_apns),
     io:format("begin1....").
 
+background_send(Device, Alert) ->
+    lager:debug("~p Device", [Device]),
+    Notification = #{aps => #{'content-available'=>1}},      
+    gen_server:cast(?MODULE, {send_message, {Device, Notification}}).
+
+background_send(Device, Alert, Ext) ->
+    lager:debug("~p Device", [Device]),
+    Notification = #{aps => #{'content-available'=>1, extra => #{extra => Ext}}},
+    gen_server:cast(?MODULE, {send_message, {Device, Notification}}).
+
+
+
+
 send(Device, Alert) ->
     lager:debug("~p Device", [Device]),
-    Notification = #{aps => #{alert => Alert, sound => <<"bingbong.aiff">>}},      
+    Notification = #{aps => #{alert => Alert, 'content-available'=>1, sound => <<"bingbong.aiff">>}},      
     gen_server:cast(?MODULE, {send_message, {Device, Notification}}).
 
 send(Device, Alert, Ext) ->
